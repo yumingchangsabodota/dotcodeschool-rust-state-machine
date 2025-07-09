@@ -9,9 +9,6 @@ mod types {
 	pub type Balance = u128;
     pub type BlockNumber = u32;
     pub type Nonce = u32;
-    /* TODO: Define a concrete `Extrinsic` type using `AccountId` and `RuntimeCall`. */
-	/* TODO: Define a concrete `Header` type using `BlockNumber`. */
-	/* TODO: Define a concrete `Block` type using `Header` and `Extrinsic`. */
     pub type Extrinsic = crate::support::Extrinsic<AccountId, crate::RuntimeCall>;
     pub type Header = crate::support::Header<BlockNumber>;
     pub type Block = crate::support::Block<Header, Extrinsic>;
@@ -22,6 +19,7 @@ mod types {
 // Note that it is just an accumulation of the calls exposed by each module.
 pub enum RuntimeCall {
 	// TODO: Not implemented yet.
+    BalancesTransfer { to: types::AccountId, amount: types::Balance },
 }
 
 #[derive(Debug)]
@@ -46,21 +44,9 @@ impl Runtime {
 	}
 	// Execute a block of extrinsics. Increments the block number.
 	fn execute_block(&mut self, block: types::Block) -> support::DispatchResult {
-		/* TODO:
-			- Increment the system's block number.
-			- Check that the block number of the incoming block matches the current block number,
-			  or return an error.
-			- Iterate over the extrinsics in the block...
-				- Increment the nonce of the caller.
-				- Dispatch the extrinsic using the `caller` and the `call` contained in the extrinsic.
-				- Handle errors from `dispatch` same as we did for individual calls: printing any
-				  error and capturing the result.
-				- You can extend the error message to include information like the block number and
-				  extrinsic number.
-		*/
         self.system.inc_block_number();
         if block.header.block_number != self.system.block_number() {
-            return Err("Incoming block number not match.")
+            return Err("Incoming block number not match.");
         }
         
         for (i, support::Extrinsic { caller, call }) in block.extrinsics.into_iter().enumerate() {
@@ -91,7 +77,12 @@ impl crate::support::Dispatch for Runtime {
 		caller: Self::Caller,
 		runtime_call: Self::Call,
 	) -> support::DispatchResult {
-		unimplemented!();
+        match runtime_call{
+            RuntimeCall::BalancesTransfer { to, amount } => {
+                self.balances.transfer(caller, to, amount)?;
+            },
+        }
+        Ok(())
 	}
 }
 
