@@ -88,43 +88,42 @@ impl crate::support::Dispatch for Runtime {
 
 
 fn main() {
-	/* TODO: Create a mutable variable `runtime`, which is a new instance of `Runtime`. */
-    let mut runtime = Runtime::new();
-	/* TODO: Set the balance of `alice` to 100, allowing us to execute other transactions. */
-    runtime.balances.set_balance(&"alice".to_string(), 100);
+	let mut runtime = Runtime::new();
+	let alice = "alice".to_string();
+	let bob = "bob".to_string();
+    let charlie = "charlie".to_string();
 
-	// start emulating a block
-	/* TODO: Increment the block number in system. */
-	/* TODO: Assert the block number is what we expect. */
-    runtime.system.inc_block_number();
-    assert_eq!(runtime.system.block_number(), 1);
+	// Initialize the system with some initial balance.
+	runtime.balances.set_balance(&alice, 100);
 
-	// first transaction
-	/* TODO: Increment the nonce of `alice`. */
-    runtime.system.inc_nonce(&"alice".to_string());
-
-	/* TODO: Execute a transfer from `alice` to `bob` for 30 tokens.
-		- The transfer _could_ return an error. We should use `map_err` to print
-		  the error if there is one.
-		- We should capture the result of the transfer in an unused variable like `_res`.
+    /*
+		TODO: Replace the logic above with a new `Block`.
+			- Set the block number to 1 in the `Header`.
+			- Move your existing transactions into extrinsic format, using the
+			  `Extrinsic` and `RuntimeCall`.
 	*/
-    let _res = runtime
-                            .balances
-                            .transfer("alice".to_string(), "bob".to_string(), 30)
-                            .map_err(|error|{
-                                println!("{:?}",error);
-                            });
+    let block_1 = types::Block {
+        header: support::Header { block_number: 1 },
+        extrinsics: vec![
+            support::Extrinsic {
+                caller: alice.clone(),
+                call: RuntimeCall::BalancesTransfer { to: bob, amount: 66 },
+            },            
+            support::Extrinsic {
+                caller: alice,
+                call: RuntimeCall::BalancesTransfer { to: charlie, amount: 20 },
+            },
+        ],
+    };
 
+	/*
+		TODO:
+		Use your `runtime` to call the `execute_block` function with your new block.
+		If the `execute_block` function returns an error, you should panic!
+		We `expect` that all the blocks being executed must be valid.
+	*/
+    runtime.execute_block(block_1).expect("invalid block");
 
-	// second transaction
-	/* TODO: Increment the nonce of `alice` again. */
-    runtime.system.inc_nonce(&"alice".to_string());
-	/* TODO: Execute another balance transfer, this time from `alice` to `charlie` for 20. */
-    let _res = runtime
-                            .balances
-                            .transfer("alice".to_string(), "charlie".to_string(), 30)
-                            .map_err(|error|{
-                                println!("{:?}",error);
-                            });
+	// Simply print the debug format of our runtime state.                
     println!("{:#?}", runtime);
 }
