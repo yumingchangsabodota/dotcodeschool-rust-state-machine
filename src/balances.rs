@@ -1,6 +1,8 @@
 use std::collections::BTreeMap;
 use num::traits::{CheckedAdd, CheckedSub, Zero};
 
+use crate::RuntimeCall;
+
 pub trait Config: crate::system::Config{
     type Balance: Zero + CheckedSub + CheckedAdd + Copy;
 }
@@ -46,6 +48,33 @@ impl<T: Config> Pallet<T>{
 	}
 }
 
+pub enum Call<T: Config> {
+	/* TODO: Create an enum variant `Transfer` which contains named fields:
+		- `to`: a `T::AccountId`
+		- `amount`: a `T::Balance`
+	*/
+	/* TODO: Remove the `RemoveMe` placeholder. */
+	Transfer {to: T::AccountId, amount: T::Balance },
+}
+
+impl<T: Config> crate::support::Dispatch for Pallet<T> {
+	type Caller = T::AccountId;
+	type Call = Call<T>;
+
+	fn dispatch(
+		&mut self,
+		caller: Self::Caller,
+		call: Self::Call,
+	) -> crate::support::DispatchResult {
+		/* TODO: use a `match` statement to route the `Call` to the appropriate pallet function. */
+        match call{
+            Call::Transfer { to, amount } => {
+                self.transfer(caller, to, amount)?;
+            },
+        }
+		Ok(())
+	}
+}
 
 #[cfg(test)]
 mod tests {
