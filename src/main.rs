@@ -1,6 +1,6 @@
 mod balances;
 mod system;
-
+mod support;
 
 mod types {
 	pub type AccountId = String;

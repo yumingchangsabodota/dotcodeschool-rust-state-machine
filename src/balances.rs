@@ -32,7 +32,7 @@ impl<T: Config> Pallet<T>{
 		caller: T::AccountId,
 		to: T::AccountId,
 		amount: T::Balance,
-	) -> Result<(), &'static str> {
+	) -> crate::support::DispatchResult {
         let caller_balance: T::Balance = self.balance(&caller);
         let to_balance: T::Balance = self.balance(&to);
 
@@ -50,7 +50,7 @@ impl<T: Config> Pallet<T>{
 #[cfg(test)]
 mod tests {
     struct TestConfig;
-    
+
     impl crate::system::Config for TestConfig{
         type AccountId = String;
 		type BlockNumber = u32;
