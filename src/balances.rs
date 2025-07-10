@@ -25,7 +25,10 @@ impl<T: Config> Pallet<T>{
 		/* Return the balance of `who`, returning zero if `None`. */
 		*self.balances.get(who).unwrap_or(&T::Balance::zero())
 	}
+}
 
+#[macros::call]
+impl<T: Config> Pallet<T>{
     /// Transfer `amount` from one account to another.
 	/// This function verifies that `from` has at least `amount` balance to transfer,
 	/// and that no mathematical overflows occur.
@@ -48,33 +51,6 @@ impl<T: Config> Pallet<T>{
 	}
 }
 
-pub enum Call<T: Config> {
-	/* TODO: Create an enum variant `Transfer` which contains named fields:
-		- `to`: a `T::AccountId`
-		- `amount`: a `T::Balance`
-	*/
-	/* TODO: Remove the `RemoveMe` placeholder. */
-	Transfer {to: T::AccountId, amount: T::Balance },
-}
-
-impl<T: Config> crate::support::Dispatch for Pallet<T> {
-	type Caller = T::AccountId;
-	type Call = Call<T>;
-
-	fn dispatch(
-		&mut self,
-		caller: Self::Caller,
-		call: Self::Call,
-	) -> crate::support::DispatchResult {
-		/* TODO: use a `match` statement to route the `Call` to the appropriate pallet function. */
-        match call{
-            Call::Transfer { to, amount } => {
-                self.transfer(caller, to, amount)?;
-            },
-        }
-		Ok(())
-	}
-}
 
 #[cfg(test)]
 mod tests {
