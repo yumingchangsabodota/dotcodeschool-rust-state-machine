@@ -29,58 +29,26 @@ impl<T: Config> Pallet<T> {
 		/* TODO: `get` the `claim` */
 		self.claims.get(claim)
 	}
+}
 
-	/// Create a new claim on behalf of the `caller`.
-	/// This function will return an error if someone already has claimed that content.
+#[macros::call]
+impl<T: Config> Pallet<T> {
+
 	pub fn create_claim(&mut self, caller: T::AccountId, claim: T::Content) -> crate::support::DispatchResult {
-		/* TODO: Check that a `claim` does not already exist. If so, return an error. */
         if self.claims.contains_key(&claim) {
             return Err("this content is already claimed");
         }
-		/* TODO: `insert` the claim on behalf of `caller`. */
         self.claims.insert(claim, caller);
 
 		Ok(())
 	}
 
-	/// Revoke an existing claim on some content.
-	/// This function should only succeed if the caller is the owner of an existing claim.
-	/// It will return an error if the claim does not exist, or if the caller is not the owner.
 	pub fn revoke_claim(&mut self, caller: T::AccountId, claim: T::Content) -> crate::support::DispatchResult {
-		/* TODO: Get the owner of the `claim` to be revoked. */
-		/* TODO: Check that the `owner` matches the `caller`. */
-		/* TODO: If all checks pass, then `remove` the `claim`. */
         let owner = self.get_claim(&claim).ok_or("claim does not exist")?;
         if *owner != caller {
             return Err("caller does not own this content");
         }
         self.claims.remove(&claim);
-		Ok(())
-	}
-}
-
-
-pub enum Call<T: Config> {
-	CreateClaim {claim: T::Content },
-    RevokeClaim {claim: T::Content },
-}
-
-impl<T: Config> crate::support::Dispatch for Pallet<T> {
-	type Caller = T::AccountId;
-	type Call = Call<T>;
-	fn dispatch(
-		&mut self,
-		caller: Self::Caller,
-		call: Self::Call,
-	) -> crate::support::DispatchResult {
-        match call{
-            Call::CreateClaim { claim } => {
-                self.create_claim(caller,claim)?;
-            },
-            Call::RevokeClaim { claim } => {
-                self.revoke_claim(caller, claim)?;
-            },
-        }
 		Ok(())
 	}
 }

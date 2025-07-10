@@ -137,15 +137,15 @@ fn main() {
             },            
             support::Extrinsic {
                 caller: alice.clone(),
-                call: RuntimeCall::ProofOfExistence(proof_of_existence::Call::CreateClaim{claim: "This is alice's first claim."}),
+                call: RuntimeCall::ProofOfExistence(proof_of_existence::Call::create_claim {claim: "This is alice's first claim."}),
             },      
             support::Extrinsic {
                 caller: bob.clone(),
-                call: RuntimeCall::ProofOfExistence(proof_of_existence::Call::CreateClaim{claim: "This is bob's first claim."}),
+                call: RuntimeCall::ProofOfExistence(proof_of_existence::Call::create_claim{claim: "This is bob's first claim."}),
             },            
             support::Extrinsic {
                 caller: bob.clone(),
-                call: RuntimeCall::ProofOfExistence(proof_of_existence::Call::CreateClaim{claim: "This is bob's second claim."}),
+                call: RuntimeCall::ProofOfExistence(proof_of_existence::Call::create_claim{claim: "This is bob's second claim."}),
             },
         ],
     };
