@@ -1,4 +1,5 @@
 mod balances;
+mod proof_of_existence;
 mod system;
 mod support;
 
